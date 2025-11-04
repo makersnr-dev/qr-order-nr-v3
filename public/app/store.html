@@ -258,31 +258,6 @@ function renderHistoryInto(elId, filter){
   }catch(e){ box.innerHTML=''; }
 }
 </script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  var tabs=document.querySelectorAll('.tabBtn');
-  var orderPane=document.getElementById('orderPane');
-  var historyPane=document.getElementById('historyPane');
-  function activate(which){
-    tabs.forEach(function(b){ b.classList.toggle('active', b.dataset.tab===which); });
-    if(orderPane) orderPane.style.display = (which==='order') ? 'block' : 'none';
-    if(historyPane){
-      historyPane.style.display = (which==='history') ? 'block' : 'none';
-      if(which==='history') renderHistoryInto('history','all');
-    }
-  }
-  activate('order');
-  var subTabs=document.querySelectorAll('#historyFilterTabs .subTabBtn');
-  window.__historyFilter='all';
-  subTabs.forEach(function(b){ b.addEventListener('click', function(){
-    subTabs.forEach(function(x){x.classList.toggle('active', x===b);});
-    window.__historyFilter=b.dataset.filter;
-    renderHistoryInto('history', window.__historyFilter);
-  });});
-  tabs.forEach(function(b){ b.addEventListener('click', function(){ activate(b.dataset.tab); }); });
-});
-</script>
 <script>
   // ===== 이전 주문 저장/로드 유틸 =====
 const PREV_KEY = 'qrnr_prev_orders'; // 도메인 합쳐도 동일 키 유지
@@ -314,4 +289,29 @@ function splitPrevOrders() {
 }
 
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var tabs=document.querySelectorAll('.tabBtn');
+  var orderPane=document.getElementById('orderPane');
+  var historyPane=document.getElementById('historyPane');
+  function activate(which){
+    tabs.forEach(function(b){ b.classList.toggle('active', b.dataset.tab===which); });
+    if(orderPane) orderPane.style.display = (which==='order') ? 'block' : 'none';
+    if(historyPane){
+      historyPane.style.display = (which==='history') ? 'block' : 'none';
+      if(which==='history') renderHistoryInto('history','all');
+    }
+  }
+  activate('order');
+  var subTabs=document.querySelectorAll('#historyFilterTabs .subTabBtn');
+  window.__historyFilter='all';
+  subTabs.forEach(function(b){ b.addEventListener('click', function(){
+    subTabs.forEach(function(x){x.classList.toggle('active', x===b);});
+    window.__historyFilter=b.dataset.filter;
+    renderHistoryInto('history', window.__historyFilter);
+  });});
+  tabs.forEach(function(b){ b.addEventListener('click', function(){ activate(b.dataset.tab); }); });
+});
+</script>
+
 </div></body></html>
