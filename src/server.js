@@ -129,6 +129,14 @@ app.post('/orders', (_req,res)=>{  // allow customer order without auth
   try { emitOrderEvent('created', o); } catch(e){}
   return res.json({ ok:true, id: o.id });
 });
+app.post('/api/orders', (_req,res)=>{  // allow customer order without auth
+  const o = req.body || {};
+  o.id = o.id || String(Date.now());
+  o.createdAt = new Date().toISOString();
+  ORDERS.push(o);
+  try { emitOrderEvent('created', o); } catch(e){}
+  return res.json({ ok:true, id: o.id });
+});
 app.post('/confirm', requireAdmin, (_req,res)=>{ try { emitOrderEvent('confirmed', { ts: Date.now() }); } catch(e){} return res.json({ ok:true }); });
 
 
