@@ -55,6 +55,7 @@ function requireAdmin(req, res, next) {
   const u = req.session?.user;
   if (u && u.role === 'admin') return next();
   return res.status(401).json({ ok: false, message: 'Unauthorized' });
+}
 // === Daily Payment Code (4-digit) ===
 function todayStr() {
   const d = new Date();
@@ -85,7 +86,7 @@ app.post('/daily-code/verify', async (req, res) => {
     return res.status(500).json({ ok:false });
   }
 });
-}
+
 
 
 // ===== Static files (namespaced) =====
