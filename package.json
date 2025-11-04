@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node api/index.js",
-    "postinstall": "node -e \"require.resolve('iron-session')\""
+   
   },
   "dependencies": {
     "express": "^4.19.2",
