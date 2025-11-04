@@ -92,7 +92,54 @@
 </thead>
 <tbody></tbody>
 </table>
-</div>
+
+<script>
+(function bankWiring(){
+  function updateBankDisplay({bank, account, holder}){
+    const disp = document.getElementById('bankDisplay');
+    if (disp) {
+      const b = bank || ''; const a = account || ''; const h = holder || '';
+      disp.textContent = b && a && h ? `${b} / ${a} / ${h}` : '';
+    }
+  }
+  async function loadBankInfo(){
+    try{
+      const j = await apiGet('/bank-info/public');
+      const d = j || {};
+      const b = document.getElementById('bankName'); if(b) b.value = d.bank || '';
+      const a = document.getElementById('bankAccount'); if(a) a.value = d.account || '';
+      const h = document.getElementById('bankHolder'); if(h) h.value = d.holder || '';
+      updateBankDisplay(d);
+    }catch(_){/* ignore */}
+  }
+  function showBankMsg(text){
+    const m = document.getElementById('bankMsg');
+    if (!m) return;
+    m.textContent = text;
+    setTimeout(()=>{ m.textContent=''; }, 2000);
+  }
+  async function saveBankInfo(){
+    const bank = (document.getElementById('bankName')||{}).value || '';
+    const account = (document.getElementById('bankAccount')||{}).value || '';
+    const holder = (document.getElementById('bankHolder')||{}).value || '';
+    try{
+      const r = await apiPost('/bank-info/save', { bank, account, holder });
+      const d = (r && r.data) || r || { bank, account, holder };
+      updateBankDisplay(d);
+      showBankMsg('저장되었습니다.');
+    }catch(e){
+      console.error(e);
+      showBankMsg('저장 실패');
+    }
+  }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const btn = document.getElementById('bankSaveBtn');
+    if (btn) btn.addEventListener('click', saveBankInfo);
+    loadBankInfo();
+  });
+})();
+</script>
+
 <div class="card hidden" id="pane-qr">
 <div class="row"><input id="qrTable" placeholder="테이블 번호"/> <button class="btn" id="makeQR">QR 생성</button> <a class="btn" download="qr.png" href="#" id="dlPng">PNG 다운로드</a>
 </div>

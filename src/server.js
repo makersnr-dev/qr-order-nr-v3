@@ -382,14 +382,3 @@ app.get('/events/orders', requireAdmin, (req, res) => {
 });
 
 export default app;
-
-
-// Health/config endpoints
-app.get('/api/ping', (_req,res)=> res.json({ ok:true, ts: Date.now() }));
-app.get('/api/config', (_req,res)=> {
-  res.json({
-    ok:true,
-    hasTossClientKey: Boolean(process.env.TOSS_CLIENT_KEY),
-    staticPaths: { admin:'/static/admin', app:'/static/app' }
-  });
-});
