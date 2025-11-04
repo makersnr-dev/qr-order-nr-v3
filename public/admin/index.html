@@ -240,10 +240,10 @@ document.getElementById('logoutBtn').onclick = ()=>{ localStorage.removeItem('ad
 (function(){ var b=document.getElementById('bankSaveBtn'); if(b) b.onclick = saveBankInfo; })();
 
 async function init(){
-  const r=await fetch('/api/admin/me'); const j=await r.json(); API=j.apiBase; ORDER_BASE=j.orderBase;
-  if(!TOKEN){ location.href='/login'; return; }
+  const me = await apiGet('/api/admin/me');
+if (!me.user) { location.href = '/login'; return; }
   // After login only: load data. Failures are shown minimally or silently.
-  try{ await Promise.all([loadOrders(), loadMenu(),  loadDailyCode() removed, loadBankInfo()]);} catch(e){ console.warn('initial load error', e); }
+  //try{ await Promise.all([loadOrders(), loadMenu(),  loadDailyCode() removed, loadBankInfo()]);} catch(e){ console.warn('initial load error', e); }
 }
 
 // Orders
