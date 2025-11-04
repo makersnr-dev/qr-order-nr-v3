@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import { ironSession } from 'iron-session';
+import { ironSession } from 'iron-session/express';
 import fs from 'fs';
 
 // Node 18+ has global fetch; add minimal guard
