@@ -134,6 +134,15 @@ app.post('/api/orders', (req, res) => {
     const o = req.body || {};
     o.id = o.id || String(Date.now());
     o.createdAt = new Date().toISOString();
+
+    // ✅ 필드 통일
+    o.type  = (o.type || o.orderType || 'store').toString();
+    delete o.orderType;
+
+    // ✅ 기본형 보정
+    o.items = Array.isArray(o.items) ? o.items : [];
+    o.total = Number(o.total ?? o.amount ?? 0);
+    
     ORDERS.push(o);
     try { emitOrderEvent('created', o); } catch(e){}
     return res.json({ ok:true, id: o.id });
