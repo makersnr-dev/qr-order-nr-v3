@@ -354,10 +354,14 @@ renderMenu();
     }
     if(bankBtn){ bankBtn.addEventListener('click', copyBankInfo); }
 
-      const r = await fetch('/config');
-      if (!r.ok) throw new Error('Config fetch failed');
-      const j = await r.json();
-      clientKey = j.clientKey;
+      const r = await fetch('/payment/config', { headers: { 'Accept': 'application/json' } });
+      if (!r.ok) throw new Error('CONFIG_HTTP_' + r.status);
+      const j = await r.json().catch(() => { throw new Error('CONFIG_JSON_PARSE'); });
+      const key = j && j.clientKey;
+    if (!key || key.length < 10) {               // 최소 길이 체크(대충 빈값 방지용)
+      throw new Error('CONFIG_EMPTY_CLIENT_KEY');
+    }
+    clientKey = key;
     } catch (e) {
       console.error('클라이언트 키 로드 실패:', e);
     }
@@ -467,6 +471,7 @@ renderMenu();
     }
     
     if (!window.TossPayments || !clientKey) {
+       throw new Error('TOSS_SDK_MISSING');       // SDK 스크립트 누락 시
       alert('결제 모듈 초기화 실패. 페이지를 새로고침해주세요.');
       return;
     }
