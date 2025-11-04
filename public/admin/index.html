@@ -290,7 +290,7 @@ async function loadOrders(){
     arr.forEach(function(o){ appendOrderRow(o); appendDeliveryRow(o); });
   }catch(e){ console.warn('loadOrders failed', e); }
 }
-(function sse(){ try{ const es=new EventSource('/events/orders', { withCredentials: true })); es.addEventListener('order', e=>{ loadOrders(); }); }catch(_){ /* fallback by timer, but silent */ setInterval(loadOrders,15000); } })();
+(function sse(){ try{ const es=new EventSource('/events/orders', { withCredentials: true }); es.addEventListener('order', e=>{ loadOrders(); }); }catch(_){ /* fallback by timer, but silent */ setInterval(loadOrders,15000); } })();
 document.getElementById('exportOrders').onclick = ()=>{ if(!TOKEN){ location.href='/login'; return; } window.location.href = api('/export/orders.xlsx')+'?token='+TOKEN; };
 
 // QR (ORDER_BASE/?table=)
