@@ -139,6 +139,11 @@ app.get('/payment/config', (_req,res)=>{
   const TOSS_CLIENT_KEY = process.env.TOSS_CLIENT_KEY || '';
   res.json({ clientKey: TOSS_CLIENT_KEY });
 });
+app.get('/api/payment/config', (_req,res)=>{
+   const TOSS_CLIENT_KEY = process.env.TOSS_CLIENT_KEY || '';
+   res.json({ clientKey: TOSS_CLIENT_KEY });
+ });
+
 
 app.post('/payment/confirm', async (req,res)=>{
   try {
