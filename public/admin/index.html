@@ -381,8 +381,8 @@ function untilMidnightText(){ const now=new Date(); const end=new Date(now); end
 function updateRemain(){ const el=document.getElementById('dcRemain'); if(el) el.textContent = untilMidnightText(); }
 setInterval(updateRemain, 60000);
 
-regenBtn.onclick = async ()=>{  { method:'POST', headers: authHeaders() });  alert('오늘의 새 코드가 발급되었습니다.'); };
-clearBtn.onclick = async ()=>{ { method:'POST', headers: authHeaders() }); alert('기본 코드로 되돌렸습니다.'); } ;
+regenBtn.onclick = async ()=>{  { method:'POST', headers: authHeaders() };  alert('오늘의 새 코드가 발급되었습니다.'); };
+clearBtn.onclick = async ()=>{ { method:'POST', headers: authHeaders() }; alert('기본 코드로 되돌렸습니다.'); } ;
 copyBtn.onclick = ()=>{ if(!TOKEN){ location.href='/login'; return; } navigator.clipboard?.writeText(dcCode.value).then(()=> alert('복사되었습니다.')); };
 
 init();
