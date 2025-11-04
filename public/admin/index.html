@@ -165,27 +165,6 @@ async function apiPost(url, data){
 let API='', ORDER_BASE='', TOKEN=localStorage.getItem('adminToken')||'';
 function authHeaders(){ return { 'Content-Type':'application/json', 'Authorization':'Bearer '+TOKEN }; }
 
-// --- Global 401 handler wrapper (auto-redirect to login) ---
-async function fetch401(input, init){
-  try{
-    const res = await fetch(input, init);
-    if(res && res.status === 401){
-      try{ localStorage.removeItem('adminToken'); }catch(_){}
-
-      try{ TOKEN = ''; }catch(_){}
-      // Preserve current path for post-login return (optional)
-      const ret = encodeURIComponent(location.pathname + location.search);
-      location.href = '/login?return=' + ret;
-      // Return a Response-like stub to avoid further errors
-      return new Response(null, {status:401});
-    }
-    return res;
-  }catch(e){
-    // network error: just rethrow
-    throw e;
-  }
-}
-
 function api(p){ return API + p; }
 
 function updateBankDisplay(d){
@@ -200,8 +179,7 @@ function updateBankDisplay(d){
 }
 async function loadBankInfo(){
   try{
-    const r = await fetch401(api('/bank-info/public'), { headers: authHeaders() });
-    if(!r.ok) return;
+   
     const j = await r.json();
     const d = (j && j.data) || {}; updateBankDisplay(d);
     const b = document.getElementById('bankName'); if(b) b.value = d.bank || '';
@@ -214,10 +192,6 @@ async function saveBankInfo(){
   const bank = (document.getElementById('bankName')||{}).value || '';
   const account = (document.getElementById('bankAccount')||{}).value || '';
   const holder = (document.getElementById('bankHolder')||{}).value || '';
-  try{
-    const r = await fetch401(api('/bank-info/public'), { method:'POST', headers: authHeaders(), body: JSON.stringify({ bank, account, holder }) });
-    if(r.ok){ showBankMsg('저장되었습니다.'); try{ await loadBankInfo(); }catch(_){} } else { showBankMsg('저장 실패'); }
-  }catch(e){ showBankMsg('오류: '+(e?.message||e)); }
 }
 
 
