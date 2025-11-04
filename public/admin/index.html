@@ -240,7 +240,7 @@ async function init(){
   const r=await fetch('/api/admin/me'); const j=await r.json(); API=j.apiBase; ORDER_BASE=j.orderBase;
   if(!TOKEN){ location.href='/login'; return; }
   // After login only: load data. Failures are shown minimally or silently.
-  try{ await Promise.all([loadOrders(), loadMenu(), // loadDailyCode() removed, loadBankInfo()]); }catch(e){ console.warn('initial load error', e); }
+  try{ await Promise.all([loadOrders(), loadMenu(),  loadDailyCode() removed, loadBankInfo()]); }catch(e){ console.warn('initial load error', e); }
 }
 
 // Orders
@@ -403,7 +403,7 @@ document.getElementById('m_upload').onclick = async ()=>{
 function untilMidnightText(){ const now=new Date(); const end=new Date(now); end.setHours(24,0,0,0); const ms=end-now; const h=Math.floor(ms/3600000); const m=Math.floor((ms%3600000)/60000); return `자정까지 ${h}시간 ${m}분`; }
 function updateRemain(){ const el=document.getElementById('dcRemain'); if(el) el.textContent = untilMidnightText(); }
 setInterval(updateRemain, 60000);
-async function // loadDailyCode() removed{
+async function  loadDailyCode() removed{
   if(!TOKEN) return;
   try{
     const r=await fetch401(joinUrl(ORDER_BASE, '#removed'));
@@ -414,8 +414,8 @@ async function // loadDailyCode() removed{
     updateRemain();
   }catch(e){ /* silent */ }
 }
-regenBtn.onclick = async ()=>{ if(!TOKEN){ location.href='/login'; return; } const r=await fetch401(api('#removed/regen'), { method:'POST', headers: authHeaders() }); if(r.ok){ await // loadDailyCode() removed; alert('오늘의 새 코드가 발급되었습니다.'); } };
-clearBtn.onclick = async ()=>{ if(!TOKEN){ location.href='/login'; return; } const r=await fetch401(api('#removed/clear'), { method:'POST', headers: authHeaders() }); if(r.ok){ await // loadDailyCode() removed; alert('기본 코드로 되돌렸습니다.'); } };
+regenBtn.onclick = async ()=>{ if(!TOKEN){ location.href='/login'; return; } const r=await fetch401(api('#removed/regen'), { method:'POST', headers: authHeaders() }); if(r.ok){ await  loadDailyCode() removed; alert('오늘의 새 코드가 발급되었습니다.'); } };
+clearBtn.onclick = async ()=>{ if(!TOKEN){ location.href='/login'; return; } const r=await fetch401(api('#removed/clear'), { method:'POST', headers: authHeaders() }); if(r.ok){ await  loadDailyCode() removed; alert('기본 코드로 되돌렸습니다.'); } };
 copyBtn.onclick = ()=>{ if(!TOKEN){ location.href='/login'; return; } navigator.clipboard?.writeText(dcCode.value).then(()=> alert('복사되었습니다.')); };
 
 init();
@@ -480,7 +480,7 @@ function handleCall(payload){ const table = payload.table || payload.tableNo || 
 function wireSSE(){ if(!window.EventSource){ setConn('down'); return;} setConn('checking'); const base=(window.API||''); const endpoints=['/events/orders','/events','/sse']; let connected=false,tried=0; function tryNext(){ if(connected||tried>=endpoints.length){ if(!connected) setConn('down'); return;} const ep=endpoints[tried++]; try{ const es=new EventSource(base+ep); es.addEventListener('open',()=>{ connected=true; setConn('ok'); log('SSE 연결: '+ep); }); es.addEventListener('error',()=>{ if(!connected){ log('SSE 실패: '+ep); es.close(); tryNext(); } }); ['staff','staff_call','assist','call','notify','message','order'].forEach(function(ev){ es.addEventListener(ev,function(e){ const p=parsePayload(e.data||''); if(p && (String(p.type||'').toLowerCase().includes('staff') || ev==='staff' || ev==='staff_call' || ev==='assist' || ev==='call')) handleCall(p); }); }); es.onmessage=function(e){ const p=parsePayload(e.data||''); if(p && (p.type==='staff_call'||p.kind==='staff_call'||p.event==='staff_call')) handleCall(p); }; }catch(_){ tryNext(); } } tryNext(); }
 document.addEventListener('DOMContentLoaded', function(){ try{ NT.enabled = localStorage.getItem(SKEY)==='1'; }catch(_){ } setPerm(); syncPermBtn(); attachButtons(); wireSSE(); });
 })();</script>
-</div><audio id="deliveryNotifySound" preload="auto" src="data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA..."></audio>
+</div><audio id="deliveryNotifySound" preload="auto" src="data:audio/mp3;base64,uQZAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA..."></audio>
 <script>
 /* ADMIN_NOTIFY_BLOCK */
 (function(){
