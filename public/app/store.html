@@ -283,4 +283,35 @@ document.addEventListener('DOMContentLoaded', function(){
   tabs.forEach(function(b){ b.addEventListener('click', function(){ activate(b.dataset.tab); }); });
 });
 </script>
+<script>
+  // ===== 이전 주문 저장/로드 유틸 =====
+const PREV_KEY = 'qrnr_prev_orders'; // 도메인 합쳐도 동일 키 유지
+
+function loadPrevOrders() {
+  try {
+    return JSON.parse(localStorage.getItem(PREV_KEY) || '[]');
+  } catch { return []; }
+}
+
+function savePrevOrder(order) {
+  try {
+    const arr = loadPrevOrders();
+    arr.unshift(order);
+    localStorage.setItem(PREV_KEY, JSON.stringify(arr.slice(0, 50))); // 최대 50개까지 보관
+  } catch (e) {
+    console.warn('savePrevOrder failed', e);
+  }
+}
+
+// type으로 분기해서 그릴 때 쓰는 헬퍼 (선택)
+function splitPrevOrders() {
+  const all = loadPrevOrders();
+  return {
+    store: all.filter(o => o.type === 'store'),
+    delivery: all.filter(o => o.type === 'delivery'),
+    reserve: all.filter(o => o.type === 'reserve'),
+  };
+}
+
+</script>
 </div></body></html>
