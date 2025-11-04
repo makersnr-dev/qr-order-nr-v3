@@ -159,7 +159,18 @@ async function apiPost(url, data){
 }
 </script>
 
+<script>
 
+
+let API='', ORDER_BASE='', TOKEN=localStorage.getItem('adminToken')||'';
+function authHeaders(){ return { 'Content-Type':'application/json', 'Authorization':'Bearer '+TOKEN }; }
+
+// --- Global 401 handler wrapper (auto-redirect to login) ---
+async function fetch401(input, init){
+  try{
+    const res = await fetch(input, init);
+    if(res && res.status === 401){
+      try{ localStorage.removeItem('adminToken'); }catch(_){}
 
       try{ TOKEN = ''; }catch(_){}
       // Preserve current path for post-login return (optional)
@@ -432,7 +443,8 @@ async function apiPost(url, data){
   return res.json();
 }
 </script>
-(function(){if(window.__QR_CTRL_513N2B)return;window.__QR_CTRL_513N2B=true;
+  
+<script>(function(){if(window.__QR_CTRL_513N2B)return;window.__QR_CTRL_513N2B=true;
 var HAS_TOKEN=false; try{ HAS_TOKEN=!!(window.localStorage&&localStorage.getItem('adminToken')); }catch(_){}
 function $(s,r){return (r||document).querySelector(s);} function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
 function textOf(e){return (e&&(e.textContent||e.innerText||e.value||'')).trim();}
@@ -492,7 +504,8 @@ async function apiPost(url, data){
   return res.json();
 }
 </script>
-(function(){if(window.__NT_CTRL_221B)return;window.__NT_CTRL_221B=true;
+  
+<script>(function(){if(window.__NT_CTRL_221B)return;window.__NT_CTRL_221B=true;
 const NT={ctx:null,enabled:false,lastKeys:[],maxKeys:20}; const SKEY='__qr_user_beep_enabled_v2';
 function log(s){try{const el=document.getElementById('ntLog'); if(el){el.textContent=(el.textContent?el.textContent+'\\n':'')+s;}}catch(_){}} 
 function setConn(state){const el=document.getElementById('ntConn'); if(!el)return; if(state==='ok'){el.textContent='연결됨'; el.className='pill ok';} else if(state==='down'){el.textContent='끊김'; el.className='pill bad';} else {el.textContent='확인 중…'; el.className='pill';}}
@@ -531,7 +544,7 @@ async function apiPost(url, data){
   return res.json();
 }
 </script>
-
+<script>
 /* ADMIN_NOTIFY_BLOCK */
 (function(){
   if (window.__ADMIN_NOTIFY_INIT__) return;
