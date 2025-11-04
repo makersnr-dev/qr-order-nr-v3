@@ -243,7 +243,7 @@ async function init(){
   const r=await fetch('/api/admin/me'); const j=await r.json(); API=j.apiBase; ORDER_BASE=j.orderBase;
   if(!TOKEN){ location.href='/login'; return; }
   // After login only: load data. Failures are shown minimally or silently.
-  try{ await Promise.all([loadOrders(), loadMenu(), // loadDailyCode() removed, loadBankInfo()]); }catch(e){ console.warn('initial load error', e); }
+  try{ await Promise.all([loadOrders(), loadMenu(),  loadDailyCode() removed, loadBankInfo()]);} catch(e){ console.warn('initial load error', e); }
 }
 
 // Orders
@@ -423,27 +423,6 @@ copyBtn.onclick = ()=>{ if(!TOKEN){ location.href='/login'; return; } navigator.
 
 init();
 </script>
-<script>
-async function apiGet(url){
-  const res = await fetch(url, { credentials:'same-origin' });
-  if(res.status===401){ location.href='/login'; throw new Error('401'); }
-  if(!res.ok) throw new Error('GET '+url+' '+res.status);
-  const ct = res.headers.get('content-type')||'';
-  if(!ct.includes('application/json')){
-    const t = await res.text();
-    throw new Error('Expected JSON, got: '+t.slice(0,120));
-  }
-  return res.json();
-}
-async function apiPost(url, data){
-  const res = await fetch(url, { method:'POST', credentials:'same-origin',
-    headers:{'Content-Type':'application/json'}, body: JSON.stringify(data||{}) });
-  if(res.status===401){ location.href='/login'; throw new Error('401'); }
-  if(!res.ok) throw new Error('POST '+url+' '+res.status);
-  return res.json();
-}
-</script>
-  
 <script>(function(){if(window.__QR_CTRL_513N2B)return;window.__QR_CTRL_513N2B=true;
 var HAS_TOKEN=false; try{ HAS_TOKEN=!!(window.localStorage&&localStorage.getItem('adminToken')); }catch(_){}
 function $(s,r){return (r||document).querySelector(s);} function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
@@ -484,27 +463,6 @@ function wireDownload(c){ function saveFromSrc(ev){ if(ev){ev.preventDefault();e
 function hookSave(c,ui){ if(!ui.save) return; ui.save.onclick=function(){ if(!HAS_TOKEN){ alert('로그인 후 이용해 주세요.'); return;} var t=getTable(c) || prompt('테이블 번호를 입력하세요') || ''; if(!t) return; var src=currentImgUrl(c); if(!src){ alert('먼저 QR을 생성하세요.'); return; } var l=getList(); var idx=l.findIndex(function(it){return String(it.table||'')===String(t);}); var item={table:String(t), url:src, ts: now()}; if(idx>=0) l[idx]=item; else l.push(item); setList(l); render(ui.grid); }; }
 document.addEventListener('DOMContentLoaded', function(){ var c=card(); var ui=ensureUI(c); render(ui.grid); wireDownload(c); hookSave(c,ui); });
 })();</script>
-<script>
-async function apiGet(url){
-  const res = await fetch(url, { credentials:'same-origin' });
-  if(res.status===401){ location.href='/login'; throw new Error('401'); }
-  if(!res.ok) throw new Error('GET '+url+' '+res.status);
-  const ct = res.headers.get('content-type')||'';
-  if(!ct.includes('application/json')){
-    const t = await res.text();
-    throw new Error('Expected JSON, got: '+t.slice(0,120));
-  }
-  return res.json();
-}
-async function apiPost(url, data){
-  const res = await fetch(url, { method:'POST', credentials:'same-origin',
-    headers:{'Content-Type':'application/json'}, body: JSON.stringify(data||{}) });
-  if(res.status===401){ location.href='/login'; throw new Error('401'); }
-  if(!res.ok) throw new Error('POST '+url+' '+res.status);
-  return res.json();
-}
-</script>
-  
 <script>(function(){if(window.__NT_CTRL_221B)return;window.__NT_CTRL_221B=true;
 const NT={ctx:null,enabled:false,lastKeys:[],maxKeys:20}; const SKEY='__qr_user_beep_enabled_v2';
 function log(s){try{const el=document.getElementById('ntLog'); if(el){el.textContent=(el.textContent?el.textContent+'\\n':'')+s;}}catch(_){}} 
@@ -524,26 +482,6 @@ function wireSSE(){ if(!window.EventSource){ setConn('down'); return;} setConn('
 document.addEventListener('DOMContentLoaded', function(){ try{ NT.enabled = localStorage.getItem(SKEY)==='1'; }catch(_){ } setPerm(); syncPermBtn(); attachButtons(); wireSSE(); });
 })();</script>
 </div><audio id="deliveryNotifySound" preload="auto" src="data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA..."></audio>
-<script>
-async function apiGet(url){
-  const res = await fetch(url, { credentials:'same-origin' });
-  if(res.status===401){ location.href='/login'; throw new Error('401'); }
-  if(!res.ok) throw new Error('GET '+url+' '+res.status);
-  const ct = res.headers.get('content-type')||'';
-  if(!ct.includes('application/json')){
-    const t = await res.text();
-    throw new Error('Expected JSON, got: '+t.slice(0,120));
-  }
-  return res.json();
-}
-async function apiPost(url, data){
-  const res = await fetch(url, { method:'POST', credentials:'same-origin',
-    headers:{'Content-Type':'application/json'}, body: JSON.stringify(data||{}) });
-  if(res.status===401){ location.href='/login'; throw new Error('401'); }
-  if(!res.ok) throw new Error('POST '+url+' '+res.status);
-  return res.json();
-}
-</script>
 <script>
 /* ADMIN_NOTIFY_BLOCK */
 (function(){
