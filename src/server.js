@@ -18,7 +18,6 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 // ===== iron-session setup =====
-import { getIronSession } from 'iron-session';
 
 const sessionPassword = process.env.SESSION_PASSWORD || 'change-me-32-characters-min-secret!!!!';
 
