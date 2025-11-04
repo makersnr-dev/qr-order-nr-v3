@@ -162,21 +162,7 @@ async function apiPost(url, data){
 <script>
 
 
-let API='', ORDER_BASE='', TOKEN=localStorage.getItem('adminToken')||'';
-function authHeaders(){ return { 'Content-Type':'application/json', 'Authorization':'Bearer '+TOKEN }; }
 
-function api(p){ return API + p; }
-
-function updateBankDisplay(d){
-  try{
-    var out = '';
-    if(d && (d.bank||d.account||d.holder)){
-      out = [d.bank||'', d.account||'', d.holder||''].filter(Boolean).join(' / ');
-    }
-    var tgt = document.getElementById('bankDisplay');
-    if(tgt) tgt.textContent = out || '(저장된 정보 없음)';
-  }catch(_){} 
-}
 async function loadBankInfo(){
   try{
    
@@ -304,7 +290,7 @@ async function loadOrders(){
     arr.forEach(function(o){ appendOrderRow(o); appendDeliveryRow(o); });
   }catch(e){ console.warn('loadOrders failed', e); }
 }
-(function sse(){ try{ const es=new EventSource(api('/events/orders')); es.addEventListener('order', e=>{ loadOrders(); }); }catch(_){ /* fallback by timer, but silent */ setInterval(loadOrders,15000); } })();
+(function sse(){ try{ const es=new EventSource('/events/orders', { withCredentials: true })); es.addEventListener('order', e=>{ loadOrders(); }); }catch(_){ /* fallback by timer, but silent */ setInterval(loadOrders,15000); } })();
 document.getElementById('exportOrders').onclick = ()=>{ if(!TOKEN){ location.href='/login'; return; } window.location.href = api('/export/orders.xlsx')+'?token='+TOKEN; };
 
 // QR (ORDER_BASE/?table=)
@@ -442,7 +428,7 @@ function attachButtons(){ const btnE=document.getElementById('ntEnableSound'); i
 function parsePayload(data){ try{ return JSON.parse(data); }catch(_){ return { message: data }; } }
 function handleOrder(payload){ try{ if(payload && payload.order) appendOrderRow(payload.order); }catch(_){ } }
 function handleCall(payload){ const table = payload.table || payload.tableNo || payload.t || ''; const key = 'call:'+String(table||'')+':'+(payload.at||payload.id||payload.ts||''); if(!dedup(key)) return; beep(); notifyBrowser('직원 호출', (table?('테이블 '+table+'에서 호출'): '직원 호출') ); try{ log('[직원 호출] '+ (table?('테이블 '+table):'')); }catch(_){ } }
-function wireSSE(){ if(!window.EventSource){ setConn('down'); return;} setConn('checking'); const base=(window.API||''); const endpoints=['/events/orders','/events','/sse']; let connected=false,tried=0; function tryNext(){ if(connected||tried>=endpoints.length){ if(!connected) setConn('down'); return;} const ep=endpoints[tried++]; try{ const es=new EventSource(base+ep); es.addEventListener('open',()=>{ connected=true; setConn('ok'); log('SSE 연결: '+ep); }); es.addEventListener('error',()=>{ if(!connected){ log('SSE 실패: '+ep); es.close(); tryNext(); } }); ['staff','staff_call','assist','call','notify','message','order'].forEach(function(ev){ es.addEventListener(ev,function(e){ const p=parsePayload(e.data||''); if(p && (String(p.type||'').toLowerCase().includes('staff') || ev==='staff' || ev==='staff_call' || ev==='assist' || ev==='call')) handleCall(p); }); }); es.onmessage=function(e){ const p=parsePayload(e.data||''); if(p && (p.type==='staff_call'||p.kind==='staff_call'||p.event==='staff_call')) handleCall(p); }; }catch(_){ tryNext(); } } tryNext(); }
+function wireSSE(){ if(!window.EventSource){ setConn('down'); return;} setConn('checking'); const base=(window.API||''); const endpoints=['/events/orders','/events','/sse']; let connected=false,tried=0; function tryNext(){ if(connected||tried>=endpoints.length){ if(!connected) setConn('down'); return;} const ep=endpoints[tried++]; try{ const es=new EventSource('/events/orders', { withCredentials: true }); es.addEventListener('open',()=>{ connected=true; setConn('ok'); log('SSE 연결: '+ep); }); es.addEventListener('error',()=>{ if(!connected){ log('SSE 실패: '+ep); es.close(); tryNext(); } }); ['staff','staff_call','assist','call','notify','message','order'].forEach(function(ev){ es.addEventListener(ev,function(e){ const p=parsePayload(e.data||''); if(p && (String(p.type||'').toLowerCase().includes('staff') || ev==='staff' || ev==='staff_call' || ev==='assist' || ev==='call')) handleCall(p); }); }); es.onmessage=function(e){ const p=parsePayload(e.data||''); if(p && (p.type==='staff_call'||p.kind==='staff_call'||p.event==='staff_call')) handleCall(p); }; }catch(_){ tryNext(); } } tryNext(); }
 document.addEventListener('DOMContentLoaded', function(){ try{ NT.enabled = localStorage.getItem(SKEY)==='1'; }catch(_){ } setPerm(); syncPermBtn(); attachButtons(); wireSSE(); });
 })();</script>
 </div><audio id="deliveryNotifySound" preload="auto" src="data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA..."></audio>
@@ -581,5 +567,48 @@ document.addEventListener('DOMContentLoaded', function(){ try{ NT.enabled = loca
   };
 })();
 
+</script>
+<script>
+(function dailyCodeWiring(){
+  const regenBtn = document.getElementById('regenBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const copyBtn  = document.getElementById('copyBtn');
+  const dcCode   = document.getElementById('dcCode');
+
+  async function refreshDailyCodeUI(){
+    try{
+      const d = await apiGet('/admin/daily-code');
+      if (dcCode) dcCode.value ? (dcCode.value = d.code || '') : (dcCode.textContent = d.code || '');
+    }catch(_){}
+  }
+
+  if (regenBtn){
+    regenBtn.onclick = async ()=>{
+      try{
+        const r = await apiPost('/admin/daily-code/regenerate', {});
+        if (dcCode) dcCode.value ? (dcCode.value = r.code || '') : (dcCode.textContent = r.code || '');
+        alert('오늘의 새 코드가 발급되었습니다.');
+      }catch(e){ alert('발급 실패'); }
+    };
+  }
+  if (clearBtn){
+    clearBtn.onclick = async ()=>{
+      try{
+        await apiPost('/admin/daily-code/clear', {});
+        if (dcCode) dcCode.value ? (dcCode.value = '') : (dcCode.textContent = '');
+        alert('기본 코드로 되돌렸습니다.');
+      }catch(e){ alert('초기화 실패'); }
+    };
+  }
+  if (copyBtn){
+    copyBtn.onclick = ()=>{
+      const val = dcCode?.value ?? dcCode?.textContent ?? '';
+      if(!val){ alert('복사할 코드가 없습니다.'); return; }
+      navigator.clipboard?.writeText(String(val)).then(()=> alert('복사되었습니다.')).catch(()=> alert('복사 실패'));
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{ setTimeout(refreshDailyCodeUI, 0); });
+})();
 </script>
 </body></html>

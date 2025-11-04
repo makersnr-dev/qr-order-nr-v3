@@ -54,7 +54,39 @@ app.use(async (req, res, next) => {
 function requireAdmin(req, res, next) {
   const u = req.session?.user;
   if (u && u.role === 'admin') return next();
-  return res.status(401).json({ ok: false, message: 'Unauthorized' });
+  return res.status(401).json({ ok: false, message: 'Unauthorized' }
+// === Daily Payment Code (4-digit) ===
+function todayStr() {
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+let DAILY_CODE = { date: todayStr(), code: null };
+
+app.get('/admin/daily-code', requireAdmin, (req, res) => {
+  if (DAILY_CODE.date !== todayStr()) DAILY_CODE = { date: todayStr(), code: null };
+  res.json({ ok:true, date: DAILY_CODE.date, code: DAILY_CODE.code });
+});
+app.post('/admin/daily-code/regenerate', requireAdmin, async (req, res) => {
+  const code = String(Math.floor(1000 + Math.random() * 9000));
+  DAILY_CODE = { date: todayStr(), code };
+  res.json({ ok:true, date: DAILY_CODE.date, code });
+});
+app.post('/admin/daily-code/clear', requireAdmin, async (req, res) => {
+  DAILY_CODE = { date: todayStr(), code: null };
+  res.json({ ok:true, date: DAILY_CODE.date, code: DAILY_CODE.code });
+});
+app.post('/daily-code/verify', async (req, res) => {
+  try{
+    const { code } = req.body || {};
+    if (DAILY_CODE.date !== todayStr()) DAILY_CODE = { date: todayStr(), code: null };
+    const ok = !!code && DAILY_CODE.code && String(code) === String(DAILY_CODE.code);
+    return res.json({ ok });
+  }catch(e){
+    return res.status(500).json({ ok:false });
+  }
+});
+
+);
 }
 
 // ===== Static files (namespaced) =====
