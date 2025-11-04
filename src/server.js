@@ -19,14 +19,19 @@ app.use(cookieParser());
 
 // ===== iron-session setup =====
 const sessionOptions = {
+const sessionPassword = process.env.SESSION_PASSWORD || 'change-me-32-characters-min-secret!!!!';
+if (!sessionPassword || sessionPassword.length < 32) {
+  console.warn('[WARN] SESSION_PASSWORD is missing or too short; using fallback for dev.');
+}
+app.use(ironSession({
   cookieName: 'qrnr_sess',
-  password: process.env.SESSION_PASSWORD!, // 최소 32자
+  password: sessionPassword,
   cookieOptions: {
-    secure: true,     // Vercel(HTTPS) 배포면 true
+    secure: true,          // vercel uses https
     httpOnly: true,
     sameSite: 'lax',
   },
-};
+}));
 
 
 function requireAdmin(req, res, next){
