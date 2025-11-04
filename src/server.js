@@ -258,7 +258,7 @@ app.get('/bank-info/public', (_req, res) => {
   const account = process.env.BANK_ACCOUNT || '계좌번호';
   const holder = process.env.BANK_HOLDER || '예금주';
   res.json({ bank, account, holder });
-  const info = await apiGet(URL_BANK_INFO);
+ 
 });
 
 // ===== Call staff (stub; extend to push/discord/slack if needed) =====
