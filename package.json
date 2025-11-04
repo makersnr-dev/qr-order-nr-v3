@@ -7,14 +7,15 @@
     "node": "22.x"
   },
   "scripts": {
-    "start": "node api/index.js"
+    "start": "node api/index.js",
+    "postinstall": "node -e \"require.resolve('iron-session')\""
   },
   "dependencies": {
-    "body-parser": "^1.20.2",
-    "cookie-parser": "^1.4.6",
     "express": "^4.19.2",
+     "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
     "iron-session": "^8.0.4",
-    "multer": "^1.4.5-lts.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "multer": "^1.4.5-lts.1"
   }
 }
