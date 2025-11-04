@@ -251,13 +251,28 @@ app.post('/payment/confirm', async (req, res) => {
   }
 });
 
-// ===== Public bank info =====
+// ===== Public bank info (GET) & save (POST) =====
+let bankState = {
+  bank: process.env.BANK_NAME || '은행',
+  account: process.env.BANK_ACCOUNT || '계좌번호',
+  holder: process.env.BANK_HOLDER || '예금주',
+};
+
 app.get('/bank-info/public', (_req, res) => {
-  // read from env (or later from DB)
-  const bank = process.env.BANK_NAME || '은행';
-  const account = process.env.BANK_ACCOUNT || '계좌번호';
-  const holder = process.env.BANK_HOLDER || '예금주';
-  res.json({ bank, account, holder });
+  res.json(bankState);
+});
+
+app.post('/bank-info/save', (req, res) => {
+  try{
+    const { bank, account, holder } = req.body || {};
+    if (typeof bank === 'string') bankState.bank = bank.trim();
+    if (typeof account === 'string') bankState.account = account.trim();
+    if (typeof holder === 'string') bankState.holder = holder.trim();
+    res.json({ ok: true, data: bankState });
+  }catch(e){
+    res.status(400).json({ ok:false, message:'bad request' });
+  }
+});
  
 });
 
