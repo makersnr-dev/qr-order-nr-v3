@@ -514,7 +514,7 @@ renderMenu();
     const items = Array.from(cart.entries()).map(([id, qty]) => [id, qty]);
     try{ sessionStorage.setItem('qrOrderPending', JSON.stringify({ items, amount, orderId, deliveryInfo, orderType: 'reserve', bankInfo: __bankInfo })); }catch(_){}
     try{
-      const rr = await fetch('/orders', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ items, amount, orderId, deliveryInfo, orderType:'reserve', bankInfo: __bankInfo }) });
+      const rr = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ items, amount, orderId, deliveryInfo, orderType:'reserve', bankInfo: __bankInfo }) });
       if(rr.ok){ alert('예약이 접수되었습니다.'); window.location.href='/delivery/home'; return; }
       else{ alert('예약 접수 실패'); return; }
     }catch(e){ alert('네트워크 오류로 예약을 접수하지 못했습니다.'); return; }
