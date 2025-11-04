@@ -18,20 +18,23 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 // ===== iron-session setup =====
-const sessionOptions = {
+import { getIronSession } from 'iron-session';
+
 const sessionPassword = process.env.SESSION_PASSWORD || 'change-me-32-characters-min-secret!!!!';
+
 if (!sessionPassword || sessionPassword.length < 32) {
   console.warn('[WARN] SESSION_PASSWORD is missing or too short; using fallback for dev.');
 }
-app.use(ironSession({
+
+const sessionOptions = {
   cookieName: 'qrnr_sess',
   password: sessionPassword,
   cookieOptions: {
-    secure: true,          // vercel uses https
+    secure: true, // vercel = https
     httpOnly: true,
     sameSite: 'lax',
   },
-}));
+};
 
 
 function requireAdmin(req, res, next){
