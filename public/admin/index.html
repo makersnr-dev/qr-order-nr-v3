@@ -139,7 +139,6 @@
 <div class="muted" id="ntLog" style="margin-top:10px;white-space:pre-line"></div>
 </div>
 <script>
-<script>
 async function apiGet(url){
   const res = await fetch(url, { credentials:'same-origin' });
   if(res.status===401){ location.href='/login'; throw new Error('401'); }
