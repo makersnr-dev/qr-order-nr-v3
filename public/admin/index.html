@@ -240,7 +240,7 @@ async function init(){
   const r=await fetch('/api/admin/me'); const j=await r.json(); API=j.apiBase; ORDER_BASE=j.orderBase;
   if(!TOKEN){ location.href='/login'; return; }
   // After login only: load data. Failures are shown minimally or silently.
-  try{ await Promise.all([loadOrders(), loadMenu(),  loadDailyCode() removed, loadBankInfo()]); }catch(e){ console.warn('initial load error', e); }
+  try{ await Promise.all([loadOrders(), loadMenu(),  loadDailyCode(), loadBankInfo()]); }catch(e){ console.warn('initial load error', e); }
 }
 
 // Orders
