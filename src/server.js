@@ -35,6 +35,8 @@ const sessionOptions = {
   },
 };
 
+// ✅ v8에서는 전역 미들웨어가 없으므로, 요청마다 세션을 붙여주는 커스텀 미들웨어 추가 
+app.use(async (req, res, next) => { try { req.session = await getIronSession(req, res, sessionOptions); next(); } catch (e) { next(e); } });
 
 function requireAdmin(req, res, next){
   const u = req.session?.user;
